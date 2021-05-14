@@ -106,11 +106,14 @@ app.delete("/articles", (req, res) => {
     success: true,
     massage: ` Success delete all the articles for the author => ${authorName}`,
   };
-  const found = articles.filter((element, index) => {
-
+  let found = articles.filter((element) => {
     return element.author === authorName;
   });
-//   let index = articles.indexOf(found);
-//   let toDelete = articles.slice(index, -1);
+
+  found.forEach((element) => {
+    let i = articles.indexOf(element);
+    articles.splice(i, 1);
+  })
+
   res.json(success);
 });

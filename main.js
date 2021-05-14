@@ -30,6 +30,7 @@ app.get("/articles", (req, res) => {
   res.json(articles);
   res.status(200);
 });
+
 // const found = articles.find((element) => {
 //     return element.id === 2
 // })
@@ -80,9 +81,36 @@ app.post("/articles", (req, res) => {
   };
   articles.push(article);
   res.json(article);
-  res.json(201)
+  res.json(201);
 });
 
+// 5. updateAnArticleById
+app.put("/articles/:id", (req, res) => {
+  const updateArticle = {
+    title: req.body.title,
+    description: req.body.description,
+    author: req.body.author,
+  };
+  articles.push(article);
+  res.json(article);
+  res.json(200);
+});
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);
+});
+
+// 7. deleteArticlesByAuthor
+app.delete("/articles", (req, res) => {
+  const authorName = req.body.author;
+  const success = {
+    success: true,
+    massage: ` Success delete all the articles for the author => ${authorName}`,
+  };
+  const found = articles.filter((element, index) => {
+
+    return element.author === authorName;
+  });
+//   let index = articles.indexOf(found);
+//   let toDelete = articles.slice(index, -1);
+  res.json(success);
 });

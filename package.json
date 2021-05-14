@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/bushra1997/MERAKI_Academy_Project_3#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "express": "^4.17.1"
   }
 }

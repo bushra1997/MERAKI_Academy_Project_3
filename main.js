@@ -38,15 +38,13 @@ app.get("/articles", (req, res) => {
 // 2. getAnArticleById
 app.get("/article/:id", (req, res) => {
   const id = req.params.id;
-  console.log(id);
+
   const found = articles.find((element) => {
-    return element.id === id;
+    return element.id == id;
   });
 
-  console.log(found);
   if (found) {
     res.status(200);
-    console.log(found);
     res.json(found);
   } else {
     res.status(404);
@@ -95,10 +93,22 @@ app.put("/articles/:id", (req, res) => {
   res.json(article);
   res.json(200);
 });
-app.listen(port, () => {
-  console.log(`http://localhost:${port}`);
-});
 
+// 6. deleteAnArticleById
+app.delete("/articles/:id", (req, res) => {
+  const articleId = req.params.id;
+  const success = {
+    success: true,
+    massage: ` Success Delete article with id => ${articleId}`,
+  };
+  let found = articles.find((element) => {
+    return element.id == articleId;
+  });
+  let index = articles.indexOf(found);
+  articles.splice(index, 1);
+
+  res.json(success);
+});
 // 7. deleteArticlesByAuthor
 app.delete("/articles", (req, res) => {
   const authorName = req.body.author;
@@ -113,7 +123,11 @@ app.delete("/articles", (req, res) => {
   found.forEach((element) => {
     let i = articles.indexOf(element);
     articles.splice(i, 1);
-  })
+  });
 
   res.json(success);
+});
+
+app.listen(port, () => {
+  console.log(`http://localhost:${port}`);
 });

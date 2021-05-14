@@ -84,13 +84,18 @@ app.post("/articles", (req, res) => {
 
 // 5. updateAnArticleById
 app.put("/articles/:id", (req, res) => {
-  const updateArticle = {
+  const updatedArticle = {
+    id: req.params.id,
     title: req.body.title,
     description: req.body.description,
     author: req.body.author,
   };
-  articles.push(article);
-  res.json(article);
+  let found = articles.find((element) => {
+    return element.id == req.params.id;
+  });
+  let index = articles.indexOf(found);
+  articles[index] = updatedArticle;
+  res.json(updatedArticle);
   res.json(200);
 });
 

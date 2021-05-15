@@ -31,10 +31,6 @@ app.get("/articles", (req, res) => {
   res.status(200);
 });
 
-// const found = articles.find((element) => {
-//     return element.id === 2
-// })
-// console.log(found);
 // 2. getAnArticleById
 app.get("/article/:id", (req, res) => {
   const id = req.params.id;
@@ -84,14 +80,15 @@ app.post("/articles", (req, res) => {
 
 // 5. updateAnArticleById
 app.put("/articles/:id", (req, res) => {
+  const articleId = req.params.id;
   const updatedArticle = {
-    id: req.params.id,
+    id: articleId,
     title: req.body.title,
     description: req.body.description,
     author: req.body.author,
   };
   let found = articles.find((element) => {
-    return element.id == req.params.id;
+    return element.id == articleId;
   });
   let index = articles.indexOf(found);
   articles[index] = updatedArticle;

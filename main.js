@@ -1,9 +1,13 @@
 const port = 5000;
 const express = require("express");
+const db = require("./db");
 const app = express();
+
 app.use(express.json());
 
 const { uuid } = require("uuidv4");
+
+const { Users, Arts } = require("./schema");
 
 const articles = [
   {
@@ -128,6 +132,27 @@ app.delete("/articles", (req, res) => {
   });
 
   res.json(success);
+});
+
+// createNewAuthor
+app.post("/users", (req, res) => {
+  const { firstName, lastName, age, country, email, password } = req.body;
+  const user = new Users({
+    firstName,
+    lastName,
+    age,
+    country,
+    email,
+    password,
+  });
+  user
+    .save()
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      res.json(error);
+    });
 });
 
 app.listen(port, () => {

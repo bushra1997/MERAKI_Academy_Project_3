@@ -69,17 +69,33 @@ app.get("/articles/search_1", (req, res) => {
 });
 
 // 4. createNewArticle
-app.post("/articles", (req, res) => {
+app.post("/articles", async (req, res) => {
   // const {title, description, author} = req.body
-  const article = {
-    id: uuid(),
-    title: req.body.title,
-    description: req.body.description,
-    author: req.body.author,
-  };
-  articles.push(article);
-  res.json(article);
-  res.json(201);
+  const { title, description } = req.body;
+  const id = uuid();
+  let author;
+  // go to database and find the user with id that is passed in from postman and then add it to the article as the author
+  await Users.findOne({})
+    .then((result) => {
+      author = result;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  const article = new Arts({
+    title,
+    description,
+    author,
+  });
+  article
+    .save()
+    .then((result) => {
+      res.json(result);
+      res.json(201);
+    })
+    .catch((error) => {
+      res.send(error);
+    });
 });
 
 // 5. updateAnArticleById

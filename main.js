@@ -7,7 +7,7 @@ app.use(express.json());
 
 const { uuid } = require("uuidv4");
 
-const { Users, Arts } = require("./schema");
+const { Users, Arts, Comments } = require("./schema");
 
 const articles = [
   {
@@ -47,17 +47,27 @@ app.get("/articles", (req, res) => {
 app.get("/article/:id", (req, res) => {
   const id = req.params.id;
 
-  const found = articles.find((element) => {
-    return element.id == id;
-  });
+  Arts.findOne({ _id: id })
+    .populate("author","firstName")
+    .exec()
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      res.send(error);
+    });
 
-  if (found) {
-    res.status(200);
-    res.json(found);
-  } else {
-    res.status(404);
-    res.json("Not found");
-  }
+  // const found = articles.find((element) => {
+  //   return element.id == id;
+  // });
+
+  // if (found) {
+  //   res.status(200);
+  //   res.json(found);
+  // } else {
+  //   res.status(404);
+  //   res.json("Not found");
+  // }
 });
 
 // 3. getArticlesByAuthor

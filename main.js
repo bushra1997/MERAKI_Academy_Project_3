@@ -48,7 +48,7 @@ app.get("/article/:id", (req, res) => {
   const id = req.params.id;
 
   Arts.findOne({ _id: id })
-    .populate("author","firstName")
+    .populate("author", "firstName")
     .exec()
     .then((result) => {
       res.json(result);
@@ -126,19 +126,31 @@ app.post("/articles", async (req, res) => {
 // 5. updateAnArticleById
 app.put("/articles/:id", (req, res) => {
   const articleId = req.params.id;
-  const updatedArticle = {
-    id: articleId,
-    title: req.body.title,
-    description: req.body.description,
-    author: req.body.author,
-  };
-  let found = articles.find((element) => {
-    return element.id == articleId;
-  });
-  let index = articles.indexOf(found);
-  articles[index] = updatedArticle;
-  res.json(updatedArticle);
-  res.json(200);
+  Arts.findOneAndUpdate(
+    { _id: articleId },
+    { title: req.body.title, description: req.body.description }
+  )
+    .populate("author", "firstName")
+    .exec()
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      res.send(error);
+    });
+  // const updatedArticle = {
+  //   id: articleId,
+  //   title: req.body.title,
+  //   description: req.body.description,
+  //   author: req.body.author,
+  // };
+  // let found = articles.find((element) => {
+  //   return element.id == articleId;
+  // });
+  // let index = articles.indexOf(found);
+  // articles[index] = updatedArticle;
+  // res.json(updatedArticle);
+  // res.json(200);
 });
 
 // 6. deleteAnArticleById

@@ -9,26 +9,26 @@ const { uuid } = require("uuidv4");
 
 const { Users, Arts, Comments } = require("./schema");
 
-const articles = [
-  {
-    id: 1,
-    title: "How I learn coding?",
-    description: "Lorem, Quam, mollitia.",
-    author: "Jouza",
-  },
-  {
-    id: 2,
-    title: "Coding Best Practices",
-    description: "Lorem, ipsum dolor sit, Quam, mollitia.",
-    author: "Besslan",
-  },
-  {
-    id: 3,
-    title: "Debugging",
-    description: "Lorem, Quam, mollitia.",
-    author: "Jouza",
-  },
-];
+// const articles = [
+//   {
+//     id: 1,
+//     title: "How I learn coding?",
+//     description: "Lorem, Quam, mollitia.",
+//     author: "Jouza",
+//   },
+//   {
+//     id: 2,
+//     title: "Coding Best Practices",
+//     description: "Lorem, ipsum dolor sit, Quam, mollitia.",
+//     author: "Besslan",
+//   },
+//   {
+//     id: 3,
+//     title: "Debugging",
+//     description: "Lorem, Quam, mollitia.",
+//     author: "Jouza",
+//   },
+// ];
 // 1. getAllArticles
 app.get("/articles", (req, res) => {
   Arts.find({})
@@ -156,35 +156,50 @@ app.put("/articles/:id", (req, res) => {
 // 6. deleteAnArticleById
 app.delete("/articles/:id", (req, res) => {
   const articleId = req.params.id;
-  const success = {
-    success: true,
-    massage: ` Success Delete article with id => ${articleId}`,
-  };
-  let found = articles.find((element) => {
-    return element.id == articleId;
-  });
-  let index = articles.indexOf(found);
-  articles.splice(index, 1);
+  Arts.findOneAndDelete({ _id: articleId })
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((result) => {
+      res.send(error);
+    });
+  // const success = {
+  //   success: true,
+  //   massage: ` Success Delete article with id => ${articleId}`,
+  // };
+  // let found = articles.find((element) => {
+  //   return element.id == articleId;
+  // });
+  // let index = articles.indexOf(found);
+  // articles.splice(index, 1);
 
-  res.json(success);
+  // res.json(success);
 });
 // 7. deleteArticlesByAuthor
-app.delete("/articles", (req, res) => {
-  const authorName = req.body.author;
-  const success = {
-    success: true,
-    massage: ` Success delete all the articles for the author => ${authorName}`,
-  };
-  let found = articles.filter((element) => {
-    return element.author === authorName;
-  });
+app.delete("/articles/:author", (req, res) => {
+  const authorID = req.params.author;
+  console.log(authorID)
+  Arts.findOneAndDelete({ author: authorID })
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      res.send(error);
+    });
+  // const success = {
+  //   success: true,
+  //   massage: ` Success delete all the articles for the author => ${authorName}`,
+  // };
+  // let found = articles.filter((element) => {
+  //   return element.author === authorName;
+  // });
 
-  found.forEach((element) => {
-    let i = articles.indexOf(element);
-    articles.splice(i, 1);
-  });
+  // found.forEach((element) => {
+  //   let i = articles.indexOf(element);
+  //   articles.splice(i, 1);
+  // });
 
-  res.json(success);
+  // res.json(success);
 });
 
 // createNewAuthor

@@ -31,8 +31,16 @@ const articles = [
 ];
 // 1. getAllArticles
 app.get("/articles", (req, res) => {
-  res.json(articles);
-  res.status(200);
+  Arts.find({})
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      res.send(error);
+    });
+
+  // res.json(articles);
+  // res.status(200);
 });
 
 // 2. getAnArticleById
@@ -54,30 +62,37 @@ app.get("/article/:id", (req, res) => {
 
 // 3. getArticlesByAuthor
 app.get("/articles/search_1", (req, res) => {
-  const author = req.query.author;
-  const found = articles.filter((element) => {
-    return element.author === author;
-  });
+  const authorID = req.query.author;
+  Arts.find({ author: authorID })
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      res.send(error);
+    });
 
-  if (found) {
-    res.status(200);
-    res.json(found);
-  } else {
-    res.status(404);
-    res.json("Not found");
-  }
+  // const found = articles.filter((element) => {
+  //   return element.author === author;
+  // });
+
+  // if (found) {
+  //   res.status(200);
+  //   res.json(found);
+  // } else {
+  //   res.status(404);
+  //   res.json("Not found");
+  // }
 });
 
 // 4. createNewArticle
 app.post("/articles", async (req, res) => {
   // const {title, description, author} = req.body
   const { title, description } = req.body;
-  const id = uuid();
-  let author;
+  let author1;
   // go to database and find the user with id that is passed in from postman and then add it to the article as the author
-  await Users.findOne({})
+  await Users.findOne({ _id: "60a36ef43afd3530a472084c" })
     .then((result) => {
-      author = result;
+      author1 = result;
     })
     .catch((error) => {
       console.log(error);
@@ -85,7 +100,7 @@ app.post("/articles", async (req, res) => {
   const article = new Arts({
     title,
     description,
-    author,
+    author: author1.firstName,
   });
   article
     .save()

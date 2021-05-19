@@ -8,7 +8,11 @@ app.use(express.json());
 const { uuid } = require("uuidv4");
 
 const { Users, Arts, Comments } = require("./schema");
+const bcrypt = require("bcrypt");
+const jsonwebtoken = require("jsonwebtoken");
+require("dotenv").config();
 
+const secret = process.env.SECRET;
 // const articles = [
 //   {
 //     id: 1,

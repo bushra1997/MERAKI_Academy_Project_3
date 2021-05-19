@@ -42,7 +42,15 @@ app.get("/articles", (req, res) => {
   // res.json(articles);
   // res.status(200);
 });
-
+app.get("/users", (req, res) => {
+  Users.find({})
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      res.send(error);
+    });
+});
 // 2. getAnArticleById
 app.get("/article/:id", (req, res) => {
   const id = req.params.id;
@@ -178,7 +186,7 @@ app.delete("/articles/:id", (req, res) => {
 // 7. deleteArticlesByAuthor
 app.delete("/articles/:author", (req, res) => {
   const authorID = req.params.author;
-  console.log(authorID)
+  console.log(authorID);
   Arts.findOneAndDelete({ author: authorID })
     .then((result) => {
       res.json(result);
@@ -222,7 +230,24 @@ app.post("/users", (req, res) => {
       res.json(error);
     });
 });
-
+// login
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+  Users.findOne({ email: email, password: password })
+    .then((result) => {
+      if(result === null){
+        res.json("Invalid login credentials");
+        res.json(401);
+      }else{
+        res.json("Valid login credentials");
+        res.status(200);
+      }
+    })
+    .catch((error) => {
+      res.json(error);
+      res.json(404);
+    });
+});
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);
 });

@@ -235,10 +235,10 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   Users.findOne({ email: email, password: password })
     .then((result) => {
-      if(result === null){
+      if (result === null) {
         res.json("Invalid login credentials");
         res.json(401);
-      }else{
+      } else {
         res.json("Valid login credentials");
         res.status(200);
       }
@@ -247,6 +247,28 @@ app.post("/login", (req, res) => {
       res.json(error);
       res.json(404);
     });
+});
+// createNewComment
+app.post("/articles/:id/comments", (req, res) => {
+  const articleId = req.params.id;
+  const { comment, commenter } = req.body;
+  const addComment = new Comments({ comment, commenter });
+  addComment
+    .save()
+    .then((result) => {
+      res.json(result);
+      res.status(201);
+    })
+    .catch((error) => {
+      res.send(error);
+    });
+  // Arts.findOne({ _id: articleId })
+  //   .then((result) => {
+  //     res.json(result);
+  //   })
+  //   .catch((error) => {
+  //     res.send(error);
+  //   });
 });
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);

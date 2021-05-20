@@ -17,6 +17,9 @@ users.pre("save", async function () {
   this.password = hashedPassword;
 });
 
+users.methods.getPassword = function () {
+  // passwordDB=
+};
 const articles = new mongoose.Schema({
   title: { type: String },
   description: { type: String },

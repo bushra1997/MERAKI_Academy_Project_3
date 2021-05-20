@@ -9,30 +9,10 @@ const { uuid } = require("uuidv4");
 
 const { Users, Arts, Comments } = require("./schema");
 const bcrypt = require("bcrypt");
-const jsonwebtoken = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const secret = process.env.SECRET;
-// const articles = [
-//   {
-//     id: 1,
-//     title: "How I learn coding?",
-//     description: "Lorem, Quam, mollitia.",
-//     author: "Jouza",
-//   },
-//   {
-//     id: 2,
-//     title: "Coding Best Practices",
-//     description: "Lorem, ipsum dolor sit, Quam, mollitia.",
-//     author: "Besslan",
-//   },
-//   {
-//     id: 3,
-//     title: "Debugging",
-//     description: "Lorem, Quam, mollitia.",
-//     author: "Jouza",
-//   },
-// ];
+
 // 1. getAllArticles
 app.get("/articles", (req, res) => {
   Arts.find({})
@@ -42,9 +22,6 @@ app.get("/articles", (req, res) => {
     .catch((error) => {
       res.send(error);
     });
-
-  // res.json(articles);
-  // res.status(200);
 });
 app.get("/users", (req, res) => {
   Users.find({})
@@ -68,18 +45,6 @@ app.get("/article/:id", (req, res) => {
     .catch((error) => {
       res.send(error);
     });
-
-  // const found = articles.find((element) => {
-  //   return element.id == id;
-  // });
-
-  // if (found) {
-  //   res.status(200);
-  //   res.json(found);
-  // } else {
-  //   res.status(404);
-  //   res.json("Not found");
-  // }
 });
 
 // 3. getArticlesByAuthor
@@ -92,26 +57,12 @@ app.get("/articles/search_1", (req, res) => {
     .catch((error) => {
       res.send(error);
     });
-
-  // const found = articles.filter((element) => {
-  //   return element.author === author;
-  // });
-
-  // if (found) {
-  //   res.status(200);
-  //   res.json(found);
-  // } else {
-  //   res.status(404);
-  //   res.json("Not found");
-  // }
 });
 
 // 4. createNewArticle
 app.post("/articles", async (req, res) => {
-  // const {title, description, author} = req.body
   const { title, description } = req.body;
   let author1;
-  // go to database and find the user with id that is passed in from postman and then add it to the article as the author
   await Users.findOne({ _id: "60a36ef43afd3530a472084c" })
     .then((result) => {
       author1 = result;
@@ -150,19 +101,6 @@ app.put("/articles/:id", (req, res) => {
     .catch((error) => {
       res.send(error);
     });
-  // const updatedArticle = {
-  //   id: articleId,
-  //   title: req.body.title,
-  //   description: req.body.description,
-  //   author: req.body.author,
-  // };
-  // let found = articles.find((element) => {
-  //   return element.id == articleId;
-  // });
-  // let index = articles.indexOf(found);
-  // articles[index] = updatedArticle;
-  // res.json(updatedArticle);
-  // res.json(200);
 });
 
 // 6. deleteAnArticleById
@@ -175,17 +113,6 @@ app.delete("/articles/:id", (req, res) => {
     .catch((result) => {
       res.send(error);
     });
-  // const success = {
-  //   success: true,
-  //   massage: ` Success Delete article with id => ${articleId}`,
-  // };
-  // let found = articles.find((element) => {
-  //   return element.id == articleId;
-  // });
-  // let index = articles.indexOf(found);
-  // articles.splice(index, 1);
-
-  // res.json(success);
 });
 // 7. deleteArticlesByAuthor
 app.delete("/articles/:author", (req, res) => {
@@ -198,20 +125,6 @@ app.delete("/articles/:author", (req, res) => {
     .catch((error) => {
       res.send(error);
     });
-  // const success = {
-  //   success: true,
-  //   massage: ` Success delete all the articles for the author => ${authorName}`,
-  // };
-  // let found = articles.filter((element) => {
-  //   return element.author === authorName;
-  // });
-
-  // found.forEach((element) => {
-  //   let i = articles.indexOf(element);
-  //   articles.splice(i, 1);
-  // });
-
-  // res.json(success);
 });
 
 // createNewAuthor
@@ -234,23 +147,45 @@ app.post("/users", (req, res) => {
       res.json(error);
     });
 });
+
 // login
-app.post("/login", (req, res) => {
+app.post("/login", (req, response) => {
   const { email, password } = req.body;
-  Users.findOne({ email: email, password: password })
-    .then((result) => {
-      if (result === null) {
-        res.json("Invalid login credentials");
-        res.json(401);
-      } else {
-        res.json("Valid login credentials");
-        res.status(200);
+  Users.findOne({ email: email }).then((result) => {
+    if (result === null) {
+      let error = {
+        message: "The email doesn't exist",
+        status: 404
       }
-    })
-    .catch((error) => {
-      res.json(error);
-      res.json(404);
-    });
+      response.json(error);
+      response.status(404);
+    }else{
+      // hashedPassword the password that is stored in DB
+      bcrypt.compare(password,result.password,(err,result1)=>{
+        if (result1 === true){
+          const payload = {
+            userId: result._id,
+            country: result.country
+          }
+          const options = {
+            expiresIn: "60m",
+          };
+          const SECRET = process.env.SECRET;
+          const token = {
+            token: jwt.sign(payload, SECRET, options)
+          };
+          response.json(token)
+        }else{
+          let error = {
+            message: "The password you’ve entered is incorrect",
+            status: 404
+          }
+          response.json(error);
+          response.status(404)
+        }
+      })
+    }
+  });
 });
 // createNewComment
 app.post("/articles/:id/comments", (req, res) => {

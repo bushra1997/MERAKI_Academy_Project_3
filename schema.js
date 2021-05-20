@@ -8,6 +8,7 @@ const users = new mongoose.Schema({
   country: { type: String },
   email: { type: String, unique: true },
   password: { type: String },
+  role: { type: mongoose.Schema.ObjectId, ref: "Roles" },
 });
 
 const salt = 10;
@@ -28,9 +29,17 @@ const comments = new mongoose.Schema({
   comment: { type: String },
   commenter: { type: mongoose.Schema.ObjectId, ref: "Users" },
 });
+
+const roles = new mongoose.Schema({
+  role: { type: String },
+  permissions: [{ type: String }],
+});
+
 const Users = mongoose.model("Users", users);
 const Arts = mongoose.model("Arts", articles);
 const Comments = mongoose.model("Comments", comments);
+const Roles = mongoose.model("Roles", roles);
 module.exports.Users = Users;
 module.exports.Arts = Arts;
 module.exports.Comments = Comments;
+module.exports.Roles = Roles;

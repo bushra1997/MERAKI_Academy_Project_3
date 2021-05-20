@@ -7,7 +7,7 @@ app.use(express.json());
 
 const { uuid } = require("uuidv4");
 
-const { Users, Arts, Comments } = require("./schema");
+const { Users, Arts, Comments, Roles } = require("./schema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -186,6 +186,15 @@ app.post("/login", (req, response) => {
     }
   });
 });
+// authentication middleware
+const authentication = (req, res, next) => {
+  const token = req.headers.authorization.split(" ")[1];
+  jwt.verify(token, secret, (err, result) => {
+    if (err) {
+      return res.json(err);
+    }
+  });
+};
 // createNewComment
 app.post("/articles/:id/comments", (req, res) => {
   const articleId = req.params.id;
@@ -200,13 +209,6 @@ app.post("/articles/:id/comments", (req, res) => {
     .catch((error) => {
       res.send(error);
     });
-  // Arts.findOne({ _id: articleId })
-  //   .then((result) => {
-  //     res.json(result);
-  //   })
-  //   .catch((error) => {
-  //     res.send(error);
-  //   });
 });
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);

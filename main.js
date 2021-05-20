@@ -12,7 +12,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-
 // 1. getAllArticles
 app.get("/articles", (req, res) => {
   Arts.find({})
@@ -155,35 +154,35 @@ app.post("/login", (req, response) => {
     if (result === null) {
       let error = {
         message: "The email doesn't exist",
-        status: 404
-      }
+        status: 404,
+      };
       response.json(error);
       response.status(404);
-    }else{
+    } else {
       // hashedPassword the password that is stored in DB
-      bcrypt.compare(password,result.password,(err,result1)=>{
-        if (result1 === true){
+      bcrypt.compare(password, result.password, (err, result1) => {
+        if (result1 === true) {
           const payload = {
             userId: result._id,
-            country: result.country
-          }
+            country: result.country,
+          };
           const options = {
             expiresIn: "60m",
           };
           const SECRET = process.env.SECRET;
           const token = {
-            token: jwt.sign(payload, SECRET, options)
+            token: jwt.sign(payload, SECRET, options),
           };
-          response.json(token)
-        }else{
+          response.json(token);
+        } else {
           let error = {
             message: "The password you’ve entered is incorrect",
-            status: 404
-          }
+            status: 404,
+          };
           response.json(error);
-          response.status(404)
+          response.status(404);
         }
-      })
+      });
     }
   });
 });
